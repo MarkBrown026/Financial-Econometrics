@@ -1,0 +1,245 @@
+---
+title: "Mark Brown Homework 1"
+author: "Mark Brown"
+date: "September 22, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Question 1
+
+```{r, echo=FALSE, include=FALSE}
+library(tidyverse)
+library(quantmod)
+library(fBasics)
+
+
+```
+
+Downloading the data
+
+```{r}
+##1
+
+getSymbols('aapl',from='2000-01-01', to = '2016-12-31')
+getSymbols('ibm',from='2000-01-01', to = '2016-12-31')
+getSymbols('msft',from='2000-01-01', to = '2016-12-31')
+getSymbols('intc',from='2000-01-01', to = '2016-12-31')
+getSymbols('amzn',from='2000-01-01', to = '2016-12-31')
+
+
+```
+
+1.a Calculating Daily Returns
+```{r}
+#1a
+d_aapl<-dailyReturn(AAPL)
+d_ibm<-dailyReturn(IBM)
+d_msft<-dailyReturn(MSFT)
+d_intc<-dailyReturn(INTC)
+d_amzn<-dailyReturn(AMZN)
+```
+
+1.b. Calculating Daily Log Returns
+
+```{r}
+
+#1b
+l_aapl<-na.trim(diff(log(AAPL$AAPL.Adjusted)))
+l_ibm<-na.trim(diff(log(IBM$IBM.Adjusted)))
+l_msft<-na.trim(diff(log(MSFT$MSFT.Adjusted)))
+l_intc<-na.trim(diff(log(INTC$INTC.Adjusted)))
+l_amzn<-na.trim(diff(log(AMZN$AMZN.Adjusted)))
+```
+
+1.c. Calculating Annual Returns
+
+```{r}
+#1c
+
+a_aapl<-annualReturn(AAPL)
+a_ibm<-annualReturn(IBM)
+a_msft<-annualReturn(MSFT)
+a_intc<-annualReturn(INTC)
+a_amzn<-annualReturn(AMZN)
+
+
+```
+
+#Question 2
+
+Preparing the data for the summary table
+```{r}
+
+
+Table<-function(x){
+    output<- vector()
+    for (i in seq_along(d_stocks)){
+   output[1]<- mean(x)
+   output[2]<-  sd(x)
+   output[3]<-  kurtosis(x)
+   output[4]<-  skewness(x)
+   return(output)
+   print(output)
+}
+}
+
+d_stocks<-cbind.data.frame(d_aapl,d_ibm,d_msft,d_intc,d_amzn)
+colnames(d_stocks)<-c("aapl","ibm","msft","intc","amzn")
+
+l_stocks<-cbind.data.frame(l_aapl,l_ibm,l_msft,l_intc,l_amzn)
+colnames(l_stocks)<-c("aapl","ibm","msft","intc","amzn")
+
+Apple<-Table(d_stocks$aapl)
+Ibm<-Table(d_stocks$ibm)
+Microsoft<-Table(d_stocks$msft)
+Intel<-Table(d_stocks$intc)
+Amazon<-Table(d_stocks$amzn)
+
+Apple1<-Table(l_stocks$aapl)
+Ibm1<-Table(l_stocks$ibm)
+Microsoft1<-Table(l_stocks$msft)
+Intel1<-Table(l_stocks$intc)
+Amazon1<-Table(l_stocks$amzn)
+
+table<-cbind.data.frame(Apple,Ibm,Microsoft,Intel,Amazon)
+table1<-cbind.data.frame(Apple1,Ibm1,Microsoft1,Intel1,Amazon1)
+colnames(table1)<-c('Apple','Ibm','Microsoft','Intel','Amazon')
+Summary_table<-rbind.data.frame(table,table1)
+
+rownames(Summary_table)<-c('Mean','SD','Kurt','Skew','L-Mean','L-SD','L-Kurt','L-Skew')
+```
+
+Summary Table of the Stocks
+
+```{r}
+
+Summary_table
+
+
+```
+
+#Question 3
+
+Here are the stats for an unweighted portfolio.
+
+```{r}
+
+daily<-cbind(d_aapl, d_ibm, d_msft, d_intc, d_amzn)
+
+portfolio<-rowMeans(daily)
+
+basicStats(portfolio)
+
+
+```
+
+
+#Question 4
+
+Normal test for Apple
+
+
+```{r}
+
+l_port<-log(portfolio+1)
+
+normalTest(d_aapl,method = 'jb')
+
+```
+
+Normal test for IBM
+
+```{r}
+
+normalTest(d_ibm,method = 'jb')
+
+```
+
+Normal test for Microsoft
+
+```{r}
+
+normalTest(d_msft,method = 'jb')
+```
+
+Normal test for Intel
+
+```{r}
+
+normalTest(d_intc,method = 'jb')
+
+```
+
+Normal Test for Amazon
+
+```{r}
+
+normalTest(d_amzn,method = 'jb')
+
+```
+
+Normal test for an unweighted portfolio
+
+```{r}
+
+normalTest(portfolio,method = 'jb')
+
+```
+
+Normal test for the log of Apple
+
+```{r}
+
+normalTest(l_aapl,method = 'jb')
+
+```
+
+Normal test for the log of IBM 
+
+
+```{r}
+
+normalTest(l_ibm,method = 'jb')
+
+```
+
+Normal test for the log of Microsoft
+
+```{r}
+
+normalTest(l_msft,method = 'jb')
+
+```
+
+Normal test for the log of Intel
+
+```{r}
+
+normalTest(l_intc,method = 'jb')
+
+```
+
+Normal test for the log of Amazon
+
+```{r}
+
+normalTest(l_amzn,method = 'jb')
+
+```
+
+Nomal test for the log of an unweighted portfolio.
+
+
+```{r}
+
+normalTest(l_port,method = 'jb')
+
+```
+
+
+
+
